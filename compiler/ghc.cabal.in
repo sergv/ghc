@@ -131,6 +131,8 @@ Library
                    semaphore-compat,
                    stm,
                    rts,
+                   -- template-haskell >= 2.22.0.0,
+                   template-haskell,
                    ghc-boot   == @ProjectVersionMunged@,
                    ghc-heap   == @ProjectVersionMunged@,
                    ghci == @ProjectVersionMunged@
@@ -1006,6 +1008,12 @@ Library
         Language.Haskell.Syntax.Pat
         Language.Haskell.Syntax.Specificity
         Language.Haskell.Syntax.Type
+
+        Language.Haskell.TH.Datatype
+        Language.Haskell.TH.Datatype.Internal
+        Language.Haskell.TH.Datatype.TyVarBndr
+        Text.Show.Deriving
+        Text.Show.Deriving.InternalInternal
 
     autogen-modules: GHC.Platform.Constants
                      GHC.Settings.Config

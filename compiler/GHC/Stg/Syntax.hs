@@ -3,9 +3,13 @@
 {-# LANGUAGE DeriveDataTypeable   #-}
 {-# LANGUAGE FlexibleContexts     #-}
 {-# LANGUAGE LambdaCase           #-}
-{-# LANGUAGE TypeFamilies         #-}
 {-# LANGUAGE NamedFieldPuns       #-}
+{-# LANGUAGE TypeFamilies         #-}
 {-# LANGUAGE UndecidableInstances #-}
+
+{-# LANGUAGE ScopedTypeVariables #-}
+
+{-# LANGUAGE TemplateHaskell #-}
 
 {-
 (c) The GRASP/AQUA Project, Glasgow University, 1992-1998
@@ -70,6 +74,8 @@ module GHC.Stg.Syntax (
         pprGenStgTopBindings, pprStgTopBindings
     ) where
 
+import Language.Haskell.TH qualified as TH
+
 import GHC.Prelude
 
 import GHC.Stg.EnforceEpt.TagSig( TagSig )
@@ -99,6 +105,8 @@ import GHC.Builtin.PrimOps ( PrimOp, PrimCall )
 import Data.ByteString ( ByteString )
 import Data.Data   ( Data )
 import Data.List   ( intersperse )
+
+import Text.Show.Deriving
 
 {-
 ************************************************************************
@@ -780,9 +788,13 @@ pprGenStgBinding opts b = case b of
 instance OutputablePass pass => Outputable  (GenStgBinding pass) where
   ppr = pprGenStgBinding panicStgPprOpts
 
-pprGenStgTopBindings :: (OutputablePass pass) => StgPprOpts -> [GenStgTopBinding pass] -> SDoc
+pprGenStgTopBindings :: forall pass. (OutputablePass pass) => StgPprOpts -> [GenStgTopBinding pass] -> SDoc
 pprGenStgTopBindings opts binds
-  = vcat $ intersperse blankLine (map (pprGenStgTopBinding opts) binds)
+  = vcat
+    [ vcat $ intersperse blankLine (map (pprGenStgTopBinding opts) binds)
+    , text "--------"
+    , text $ $(makeShow $ TH.mkName "GenStgTopBinding") binds
+    ]
 
 pprStgBinding :: OutputablePass pass => StgPprOpts -> GenStgBinding pass -> SDoc
 pprStgBinding = pprGenStgBinding
