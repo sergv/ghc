@@ -94,6 +94,7 @@ packageArgs = do
             , stageVersion < makeVersion [9,8,1] ? arg "+hadrian-stage0"
             , flag StaticLibzstd `cabalFlag` "static-libzstd"
             , stage0 `cabalFlag` "bootstrap"
+            , stage2 `cabalFlag` "hadrian-stage2"
             ]
 
           , builder (Haddock BuildPackage) ? arg ("--optghc=-I" ++ path) ]
