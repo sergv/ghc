@@ -7,9 +7,12 @@
 {-# LANGUAGE TypeFamilies         #-}
 {-# LANGUAGE UndecidableInstances #-}
 
-{-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE CPP #-}
 
+#ifdef HAVE_INTERNAL_INTERPRETER
+{-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TemplateHaskell #-}
+#endif
 
 {-
 (c) The GRASP/AQUA Project, Glasgow University, 1992-1998
@@ -74,7 +77,10 @@ module GHC.Stg.Syntax (
         pprGenStgTopBindings, pprStgTopBindings
     ) where
 
+#ifdef HAVE_INTERNAL_INTERPRETER
 import Language.Haskell.TH qualified as TH
+import Text.Show.Deriving
+#endif
 
 import GHC.Prelude
 
@@ -106,7 +112,6 @@ import Data.ByteString ( ByteString )
 import Data.Data   ( Data )
 import Data.List   ( intersperse )
 
-import Text.Show.Deriving
 
 {-
 ************************************************************************
@@ -792,8 +797,10 @@ pprGenStgTopBindings :: forall pass. (OutputablePass pass) => StgPprOpts -> [Gen
 pprGenStgTopBindings opts binds
   = vcat
     [ vcat $ intersperse blankLine (map (pprGenStgTopBinding opts) binds)
+#ifdef HAVE_INTERNAL_INTERPRETER
     , text "--------"
     , text $ $(makeShow $ TH.mkName "GenStgTopBinding") binds
+#endif
     ]
 
 pprStgBinding :: OutputablePass pass => StgPprOpts -> GenStgBinding pass -> SDoc
