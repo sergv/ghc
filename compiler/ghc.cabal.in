@@ -163,8 +163,10 @@ Library
     if flag(internal-interpreter)
         CPP-Options: -DHAVE_INTERNAL_INTERPRETER
 
-    if flag(stage2)
-        build-depends: template-haskell
+    build-depends: template-haskell
+    if flag(hadrian-stage2)
+
+        CPP-Options: -DGHC_STAGE2
 
         exposed-modules:
           Language.Haskell.TH.Datatype
