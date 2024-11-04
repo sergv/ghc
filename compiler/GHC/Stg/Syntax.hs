@@ -9,7 +9,7 @@
 
 {-# LANGUAGE CPP #-}
 
-#ifdef HAVE_INTERNAL_INTERPRETER
+#ifdef GHC_STAGE2
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TemplateHaskell #-}
 #endif
@@ -77,7 +77,7 @@ module GHC.Stg.Syntax (
         pprGenStgTopBindings, pprStgTopBindings
     ) where
 
-#ifdef HAVE_INTERNAL_INTERPRETER
+#ifdef GHC_STAGE2
 import Language.Haskell.TH qualified as TH
 import Text.Show.Deriving
 #endif
@@ -797,9 +797,9 @@ pprGenStgTopBindings :: forall pass. (OutputablePass pass) => StgPprOpts -> [Gen
 pprGenStgTopBindings opts binds
   = vcat
     [ vcat $ intersperse blankLine (map (pprGenStgTopBinding opts) binds)
-#ifdef HAVE_INTERNAL_INTERPRETER
+#ifdef GHC_STAGE2
     , text "--------"
-    , text $ $(makeShow $ TH.mkName "GenStgTopBinding") binds
+    , text $ $(makeShow ''GenStgTopBinding) binds
 #endif
     ]
 
