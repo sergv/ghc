@@ -15,6 +15,6 @@ allow-newer: unordered-containers:template-haskell
 package Cabal
   optimization: False
 
--- Build static linked, vanilla libraries to reduce build time.
-shared: False
-executable-dynamic: False
+-- -- Build static linked, vanilla libraries to reduce build time.
+-- shared: False
+-- executable-dynamic: False
