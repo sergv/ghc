@@ -18,6 +18,7 @@ import Development.Shake.Command
 import Development.Shake.FilePath
 import GHC.Generics
 import GHC.Platform.ArchOS (ArchOS(..), Arch(..))
+import GHC.Stack.Types (HasCallStack)
 import qualified Hadrian.Builder as H
 import Hadrian.Builder hiding (Builder)
 import Hadrian.Builder.Ar
@@ -304,7 +305,7 @@ instance H.Builder Builder where
               pure stdout
         _ -> error $ "Builder " ++ show builder ++ " can not be asked!"
 
-    runBuilderWith :: Builder -> BuildInfo -> Action ()
+    runBuilderWith :: HasCallStack => Builder -> BuildInfo -> Action ()
     runBuilderWith builder BuildInfo {..} = do
         path <- builderPath builder
         withResources buildResources $ do

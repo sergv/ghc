@@ -14,6 +14,8 @@ module Hadrian.Haskell.Cabal.Parse (
     buildAutogenFiles, copyPackage, writeInplacePkgConf, registerPackage
     ) where
 
+import qualified Debug.Trace
+
 import Data.Bifunctor
 import Data.List.Extra
 import Development.Shake
@@ -81,10 +83,12 @@ parsePackageData pkg = do
         sorted  = sort [ C.unPackageName p | C.Dependency p _ _ <- allDeps ]
         deps    = nubOrd sorted \\ [name]
         depPkgs = mapMaybe findPackageByName deps
-    return $ PackageData name version
+    let res = PackageData name version
                          (C.fromShortText (C.synopsis pd))
                          (C.fromShortText (C.description pd))
                          depPkgs gpd
+    Debug.Trace.traceM $ "parsePackageData, pkg = " ++ show pkg ++ ", res = " ++ show res
+    pure res
   where
     -- Collect an overapproximation of dependencies by ignoring conditionals
     collectDeps :: Maybe (C.CondTree v [C.Dependency] a) -> [C.Dependency]
@@ -246,7 +250,8 @@ resolveContextData context@Context {..} = do
     pdi <- liftIO $ getHookedBuildInfo [pkgPath package, cPath -/- "build"]
 
     pkgDbPath <- packageDbPath (PackageDbLoc stage iplace)
-    let pd'  = C.updatePackageDescription pdi (C.localPkgDescr lbi)
+    let pd' :: C.PackageDescription
+        pd'  = C.updatePackageDescription pdi (C.localPkgDescr lbi)
         lbi' = lbi { C.localPkgDescr = pd' }
 
     -- TODO: Get rid of deprecated 'externalPackageDeps' and drop -Wno-deprecations
@@ -288,6 +293,7 @@ resolveContextData context@Context {..} = do
             -- @library-dirs@ here.
             _ -> error "No (or multiple) GHC rts package is registered!"
 
+        buildInfo :: C.BuildInfo
         (buildInfo, modules, rexport_modules, mainIs) = biModules (C.localPkgDescr lbi')
 
         classifyMain :: FilePath -> MainSourceType
@@ -313,8 +319,12 @@ resolveContextData context@Context {..} = do
           , includeDirs     = map C.getSymbolicPath (C.includeDirs     buildInfo)
           , includes        = map C.getSymbolicPath (C.includes        buildInfo)
           , installIncludes = map C.getSymbolicPath (C.installIncludes buildInfo)
-          , extraLibs       = C.extraLibs       buildInfo
-          , extraLibDirs    = map C.getSymbolicPath (C.extraLibDirs    buildInfo)
+          , extraLibs       =
+            Debug.Trace.trace ("resolveContextData: extraLibs: C.extraLibs buildInfo = " ++ show (C.extraLibs       buildInfo)) $
+            C.extraLibs       buildInfo
+          , extraLibDirs    =
+              Debug.Trace.trace ("resolveContextData: extraLibDirs: map C.getSymbolicPath (C.extraLibDirs    buildInfo) = " ++ show (map C.getSymbolicPath (C.extraLibDirs    buildInfo))) $
+              map C.getSymbolicPath (C.extraLibDirs    buildInfo)
           , asmSrcs         = map C.getSymbolicPath (C.asmSources      buildInfo)
           , cSrcs           = map C.getSymbolicPath (C.cSources        buildInfo) ++ [ ms | Just (_,ms) <- pure main_src, CMain   <- pure (classifyMain ms)]
           , cxxSrcs         = map C.getSymbolicPath (C.cxxSources      buildInfo) ++ [ ms | Just (_,ms) <- pure main_src, CppMain <- pure (classifyMain ms)]

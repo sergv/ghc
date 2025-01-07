@@ -20,6 +20,7 @@ module Hadrian.Builder (
 import Data.List
 import Development.Shake
 import Development.Shake.FilePath
+import GHC.Stack.Types (HasCallStack)
 
 import Hadrian.Expression hiding (inputs, outputs)
 import Hadrian.Oracles.ArgsHash
@@ -55,7 +56,7 @@ class ShakeValue b => Builder b where
     runtimeDependencies _ = return []
 
     -- | Run a builder with a given 'BuildInfo'. Also see 'runBuilder'.
-    runBuilderWith :: b -> BuildInfo -> Action ()
+    runBuilderWith :: HasCallStack => b -> BuildInfo -> Action ()
     runBuilderWith builder buildInfo = do
         let args = buildArgs buildInfo
         needBuilders [builder]
@@ -98,7 +99,7 @@ build :: (Builder b, ShakeValue c) => Target c b -> Args c b -> Action ()
 build = buildWith [] []
 
 -- | Like 'build' but acquires necessary resources.
-buildWithResources :: (Builder b, ShakeValue c) => [(Resource, Int)] -> Target c b -> Args c b -> Action ()
+buildWithResources :: (Builder b, ShakeValue c, HasCallStack) => [(Resource, Int)] -> Target c b -> Args c b -> Action ()
 buildWithResources rs = buildWith rs []
 
 askWithResources :: (Builder b, ShakeValue c) => [(Resource, Int)] -> Target c b -> Args c b -> Action String
@@ -126,10 +127,10 @@ doWith f info rs opts target args = do
                   , buildOptions   = opts
                   , buildResources = rs }
 
-buildWith :: (Builder b, ShakeValue c) => [(Resource, Int)] -> [CmdOption] -> Target c b -> Args c b -> Action ()
+buildWith :: (Builder b, ShakeValue c, HasCallStack) => [(Resource, Int)] -> [CmdOption] -> Target c b -> Args c b -> Action ()
 buildWith = doWith runBuilderWith runInfo
 
-askWith :: (Builder b, ShakeValue c) => [(Resource, Int)] -> [CmdOption] -> Target c b -> Args c b -> Action String
+askWith :: (Builder b, ShakeValue c, HasCallStack) => [(Resource, Int)] -> [CmdOption] -> Target c b -> Args c b -> Action String
 askWith = doWith askBuilderWith askInfo
 
 -- | Print out information about the command being executed.

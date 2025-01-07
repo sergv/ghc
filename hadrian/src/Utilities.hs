@@ -6,6 +6,7 @@ module Utilities (
     topsortPackages, cabalDependencies
     ) where
 
+import GHC.Stack.Types (HasCallStack)
 import qualified Hadrian.Builder as H
 import Hadrian.Haskell.Cabal
 import Hadrian.Haskell.Cabal.Type
@@ -19,13 +20,13 @@ import Target
 build :: Target -> Action ()
 build target = H.build target getArgs
 
-buildWithResources :: [(Resource, Int)] -> Target -> Action ()
+buildWithResources :: HasCallStack => [(Resource, Int)] -> Target -> Action ()
 buildWithResources rs target = H.buildWithResources rs target getArgs
 
-buildWithCmdOptions :: [CmdOption] -> Target -> Action ()
+buildWithCmdOptions :: HasCallStack => [CmdOption] -> Target -> Action ()
 buildWithCmdOptions opts target = H.buildWithCmdOptions opts target getArgs
 
-askWithResources :: [(Resource, Int)] -> Target -> Action String
+askWithResources :: HasCallStack => [(Resource, Int)] -> Target -> Action String
 askWithResources rs target = H.askWithResources rs target getArgs
 
 -- TODO: Cache the computation.

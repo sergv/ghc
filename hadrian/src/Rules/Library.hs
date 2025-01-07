@@ -1,5 +1,7 @@
 module Rules.Library (libraryRules, needLibrary, libraryTargets) where
 
+import qualified Debug.Trace
+
 import Hadrian.BuildPath
 import Hadrian.Haskell.Cabal
 import Hadrian.Haskell.Cabal.Type
@@ -140,6 +142,7 @@ files etc.
 
 buildPackage :: FilePath -> FilePath -> Action ()
 buildPackage root fp = do
+  Debug.Trace.traceM $ "buildPackage: started, root = " ++ show root ++ ", fp = " ++ show fp
   l@(BuildPath _ _ _ (PkgStamp _ _ _ way)) <- parsePath (parseStampPath root) "<.stamp parser>" fp
   let ctx = stampContext l
   srcs <- hsSources ctx
