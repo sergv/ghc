@@ -93,6 +93,9 @@ buildDynamicLib root suffix dynlibpath = do
     synopsis <- pkgSynopsis (package context)
     deps <- contextDependencies context
     registerPackages deps
+
+    need =<< traverse pkgRegisteredLibraryFile deps
+
     objs <- libraryObjects context
     build $ target context (Ghc LinkHs $ Context.stage context) objs [dynlibpath]
     putSuccess $

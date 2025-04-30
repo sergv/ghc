@@ -35,6 +35,7 @@ compileAndLinkHs = (builder (Ghc CompileHs) ||^ builder (Ghc LinkHs)) ? do
     useColor <- shakeColor <$> expr getShakeOptions
     let hasVanilla = elem vanilla ways
         hasDynamic = elem dynamic ways
+    dynDir <- expr . Context.distDynDir =<< getContext
     mconcat [ arg "-Wall"
             , arg "-Wcompat"
             , not useColor ? builder (Ghc CompileHs) ?
@@ -50,7 +51,9 @@ compileAndLinkHs = (builder (Ghc CompileHs) ||^ builder (Ghc LinkHs)) ? do
             , defaultGhcWarningsArgs
             , builder (Ghc CompileHs) ? arg "-c"
             , getInputs
-            , arg "-o", arg =<< getOutput ]
+            , arg "-o", arg =<< getOutput
+            , arg $ "-L" ++ dynDir
+            ]
 
 compileC :: Args
 compileC = builder (Ghc CompileCWithGhc) ? do

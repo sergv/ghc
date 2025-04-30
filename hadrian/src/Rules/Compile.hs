@@ -276,7 +276,11 @@ needDependencies lang context@Context {..} src depFile = do
         todo <- catMaybes <$> mapM (fullPathIfGenerated context) notFound
 
         if null todo
-        then need deps -- The list of dependencies is final, need all
+        then do
+          pkgRegisteredSOs <- traverse pkgRegisteredLibraryFile =<< contextDependencies context
+          -- Need to make sure *.so for all dependencies are in place before compiling
+          -- current package so that Tempate Haskell will work in our package’s modules.
+          need (pkgRegisteredSOs ++ deps) -- The list of dependencies is final, need
         else do
             need todo  -- Build newly discovered generated dependencies
             discover   -- Continue the discovery process
