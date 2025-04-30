@@ -148,6 +148,13 @@ buildPackage root fp = do
   srcs <- hsSources ctx
   gens <- interpretInContext ctx generatedDependencies
 
+  -- deps <- contextDependencies ctx
+  -- pkgRegisteredSOs <- traverse pkgRegisteredLibraryFile deps
+  --
+  -- -- Need to make sure *.so for all dependencies are in place before compiling
+  -- -- current package so that Tempate Haskell will work in our package’s modules.
+  -- need pkgRegisteredSOs
+
   lib_targets <- libraryTargets True ctx
 
   need (srcs ++ gens ++ lib_targets)

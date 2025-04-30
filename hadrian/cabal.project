@@ -15,6 +15,8 @@ allow-newer: unordered-containers:template-haskell
 package Cabal
   optimization: False
 
+-- with-compiler: ghc-9.10
+
 -- -- Build static linked, vanilla libraries to reduce build time.
 -- shared: False
 -- executable-dynamic: False

@@ -142,6 +142,8 @@ ghcLinkArgs = builder (Ghc LinkHs) ? do
         -- TODO: Could we get away with just one rpath...?
         bindistRpath = "$ORIGIN" -/- ".." -/- ".." -/- originToLibsDir
 
+    -- dynDir <- expr . Context.distDynDir =<< getContext
+
     mconcat [ dynamic ? mconcat
                 [ arg "-dynamic"
                 -- TODO what about windows?
@@ -166,6 +168,7 @@ ghcLinkArgs = builder (Ghc LinkHs) ? do
             , osxTarget ? pure (concat [ ["-framework", fmwk] | fmwk <- fmwks ])
             , debugged ? packageOneOf [ghc, iservProxy, iserv, remoteIserv] ?
               arg "-debug"
+            -- , arg $ "-L" ++ dynDir
             ]
 
 findHsDependencies :: Args
