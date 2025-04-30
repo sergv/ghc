@@ -37,7 +37,7 @@
             # pkgs.haskell.packages.ghc902.ghc
 
             # pkgs.haskell.packages.ghc9101.ghc
-            # hpkgs.ghc
+            hpkgs.ghc
             hpkgs.alex
             hpkgs.happy
 
