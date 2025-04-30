@@ -36,6 +36,9 @@ builddir_to_use="_build"
 #     --progress-info=brief \
 #     "${@}"
 
+# Configure thus:
+# nix develop .#devShell.i686-linux
+# ./configure --build i686-pc-linux-gnu --host i686-pc-linux-gnu --target i686-pc-linux-gnu
 
 do_build () {
     mk \
