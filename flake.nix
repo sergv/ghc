@@ -20,7 +20,7 @@
           stdenv = pkgs.stdenv;
 
           # hpkgs = pkgs.haskell.packages.ghc925;
-          hpkgs = pkgs.haskell.packages.ghc965;
+          hpkgs = pkgs.haskell.packages.ghc966;
 
           nativeDeps = [
             pkgs.libffi
@@ -59,10 +59,8 @@
 
           # LD_LIBRARY_PATH = pkgs.lib.makeLibraryPath nativeDeps;
 
-          RUNNING_UNDER_NIX = "1";
-
-          LIBRARY_PATH =
-            "${pkgs.lib.makeLibraryPath nativeDeps}:${pkgs.lib.makeLibraryPath [stdenv.cc.cc pkgs.glibc]}:${pkgs.lib.getLib pkgs.libgccjit}/lib/gcc/${stdenv.hostPlatform.config}/${pkgs.lib.getVersion stdenv.cc.cc}";
+          # LIBRARY_PATH =
+          #   "${pkgs.lib.makeLibraryPath nativeDeps}:${pkgs.lib.makeLibraryPath [stdenv.cc.cc pkgs.glibc]}:${pkgs.lib.getLib pkgs.libgccjit}/lib/gcc/${stdenv.hostPlatform.config}/${pkgs.lib.getVersion stdenv.cc.cc}";
 
 
           # # Add executable packages to the nix-shell environment.
